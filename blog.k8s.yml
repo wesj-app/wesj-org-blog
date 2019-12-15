@@ -1,0 +1,63 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: blog
+  namespace: applications
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+    cert-manager.io/issuer: "applications-issuer-letsencrypt-prod"
+    cert-manager.io/acme-challenge-type: http01
+
+spec:
+  tls:
+  - hosts:
+    # Change this to your own hostname
+    - wesj.app
+    secretName: blog-k8s-wesj-app-tls
+  rules:
+  # Change this to your own hostname
+  - host: wesj.app
+    http:
+      paths:
+      - backend:
+          serviceName: blog
+          servicePort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog
+  namespace: applications
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: blog
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog
+  namespace: applications
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog
+  template:
+    metadata:
+      labels:
+        app: blog
+    spec:
+      containers:
+      - name: blog
+        image: docker-registry.wesj.app/blog
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+        - name: regcred

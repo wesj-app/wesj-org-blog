@@ -1,0 +1,8 @@
+#baseURL: "https://wesj.app/"
+languageCode: "en-us"
+title: "wesj"
+theme: "m10c"
+
+params:
+    description: Wes Jordan - Software Engineer
+    avatar: images/scary_goofy.jpg
