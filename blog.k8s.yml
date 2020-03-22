@@ -7,16 +7,15 @@ metadata:
     kubernetes.io/ingress.class: "traefik"
     cert-manager.io/issuer: "applications-issuer-letsencrypt-prod"
     cert-manager.io/acme-challenge-type: http01
-
 spec:
   tls:
   - hosts:
     # Change this to your own hostname
-    - wesj.app
-    secretName: blog-k8s-wesj-app-tls
+    - wesj.org
+    secretName: blog-k8s-wesj-org-tls
   rules:
   # Change this to your own hostname
-  - host: wesj.app
+  - host: wesj.org
     http:
       paths:
       - backend:
@@ -45,7 +44,7 @@ metadata:
   name: blog
   namespace: applications
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: blog
@@ -57,6 +56,7 @@ spec:
       containers:
       - name: blog
         image: docker-registry.wesj.app/blog
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
       imagePullSecrets:
