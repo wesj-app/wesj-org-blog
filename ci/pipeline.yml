@@ -1,0 +1,23 @@
+---
+resources:
+  - name: blog-git
+    type: git
+    source:
+      uri: https://github.com/wesj-app/wesj-org-blog.git
+      branch: master
+
+  - name: blog-image
+    type: docker-image
+    source:
+      username: ((docker-hub-username))
+      password: ((docker-hub-password))
+      repository: ((docker-registry))/blog
+
+jobs:
+  - name: build
+    plan:
+    - get: blog-git
+      trigger: true
+    - put: blog-image
+      params:
+        build: blog-git

@@ -1,4 +1,4 @@
-#baseURL: "https://wesj.app/"
+baseURL: "https://wesj.org"
 languageCode: "en-us"
 title: "wesj"
 theme: "m10c"

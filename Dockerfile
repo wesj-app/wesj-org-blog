@@ -1,3 +1,4 @@
-FROM nginx
+FROM klakegg/hugo:0.68.3-pandoc-onbuild AS hugo
 
-COPY public/ /usr/share/nginx/html
+FROM nginx
+COPY --from=hugo /target /usr/share/nginx/html
