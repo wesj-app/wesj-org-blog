@@ -1,4 +1,11 @@
 ---
+resource_types:
+  - name: kubernetes
+    type: docker-image
+    source:
+      repository: zlabjp/kubernetes-resource
+      tag: "1.17"
+
 resources:
   - name: blog-git
     type: git
@@ -13,11 +20,39 @@ resources:
       password: ((docker-hub-password))
       repository: ((docker-registry))/blog
 
+  - name: kubernetes-deployment
+    type: kubernetes
+    source:
+      server: ((k8s-server))
+      namespace: applications
+      token: ((k8s-token))
+      certificate_authority: ((k8s-cert))
+
 jobs:
-  - name: build
+  - name: publish
     plan:
     - get: blog-git
       trigger: true
+
+    - task: versioning
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source: { repository: alpine }
+        inputs:
+          - name: blog-git
+        outputs:
+          - name: versioning
+        run:
+          path: blog-git/ci/versioning.sh
+
     - put: blog-image
       params:
         build: blog-git
+        tag_file: versioning/tag
+    - put: kubernetes-deployment
+      params:
+        kubectl: |
+          set image deployment/blog blog=((docker-registry))/blog:$(cat versioning/tag) --record
+        wait_until_ready: 300
