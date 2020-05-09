@@ -33,6 +33,8 @@ jobs:
     plan:
     - get: blog-git
       trigger: true
+      params:
+        submodules: all
 
     - task: versioning
       config:
